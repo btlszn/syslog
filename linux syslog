@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-// düğüm yapısı belirleme
+// düğüm yapısı belirleriz
 struct Dugum {
-    char mesaj[100];         // Log mesajı karakteri
-    struct Dugum* sonraki;   // Sonraki düğümün adresi
+    char mesaj[100];         // Log mesajı karakter sayisi
+    struct Dugum* sonraki;   // Sonraki düğümü belirtiriz
 };
 
 // Yeni düğüm oluşturma
@@ -13,7 +13,7 @@ struct Dugum* yeniDugumOlustur(char* mesaj) {
     // Bellekten yer ayırma
     struct Dugum* yeni = malloc(sizeof(struct Dugum));
     
-    // Mesajı kopyala
+    // Mesajı yeni dügüme kopyala
     strcpy(yeni->mesaj, mesaj);
     
     // Sonraki düğümü NULL yap şimdilik boş
