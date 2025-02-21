@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// düğüm yapısı belirleme
+struct Dugum {
+    char mesaj[100];         // Log mesajı karakteri
+    struct Dugum* sonraki;   // Sonraki düğümün adresi
+};
+
+// Yeni düğüm oluşturma
+struct Dugum* yeniDugumOlustur(char* mesaj) {
+    // Bellekten yer ayırma
+    struct Dugum* yeni = malloc(sizeof(struct Dugum));
+    
+    // Mesajı kopyala
+    strcpy(yeni->mesaj, mesaj);
+    
+    // Sonraki düğümü NULL yap şimdilik boş
+    yeni->sonraki = NULL;
+    
+    return yeni;
+}
+
+// Liste başına düğüm ekle
+struct Dugum* basaEkle(struct Dugum* bas, char* mesaj) {
+    // Yeni düğüm oluştur
+    struct Dugum* yeni = yeniDugumOlustur(mesaj);
+    
+    // Yeni düğümü listenin başına bağla
+    yeni->sonraki = bas;
+    
+    return yeni;
+}
+
+// Listedeki düğümleri yazdır
+void listeyiYazdir(struct Dugum* bas) {
+    int sayac = 1;
+    
+    printf("\n Sistemden Okunan Loglar \n");
+    
+    // Liste boş mu kontrol et
+    if (bas == NULL) {
+        printf("Liste boş!\n");
+        return;
+    }
+    
+    // Listeyi dolaş ve yazdır
+    struct Dugum* suanki = bas;
+    while (suanki != NULL) {
+        printf("%d. Log: %s\n", sayac, suanki->mesaj);
+        suanki = suanki->sonraki;
+        sayac++;
+    }
+}
+
+// Belleği temizle
+void listeyiTemizle(struct Dugum* bas) {
+    struct Dugum* suanki = bas;
+    
+    while (suanki != NULL) {
+        struct Dugum* silinecek = suanki;
+        suanki = suanki->sonraki;
+        free(silinecek);
+    }
+}
+
+int main() {
+    // Değişkenleri tanımla
+    struct Dugum* liste = NULL;
+    FILE* dosya;
+    char satir[100];
+    
+    // Dosyayı aç
+    printf("Sistem logları okunuyor...\n");
+    dosya = fopen("/var/log/syslog", "r");
+    
+    // Dosya açılamazsa hata ver
+    if (dosya == NULL) {
+        printf("Hata: Syslog dosyası açılamadı!\n");
+        return 1;
+    }
+    
+    // Dosyadan satır satır oku ve listeye ekle
+    int logSayisi = 0;
+    while (fgets(satir, sizeof(satir), dosya) && logSayisi < 10) {
+        liste = basaEkle(liste, satir);
+        logSayisi++;
+    }
+    
+    // Logları göster
+    listeyiYazdir(liste);
+    
+    // Temizlik yap
+    printf("\nBellek temizleniyor...\n");
+    listeyiTemizle(liste);
+    fclose(dosya);
+    
+    printf("Program başarıyla tamamlandı!\n");
+    return 0;
+}
